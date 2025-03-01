@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Place extends Model
 {
-    use HasFactory;
-
     protected $fillable = ['ptt', 'name'];
 
     // Relationship with Player (a place can have multiple players)
