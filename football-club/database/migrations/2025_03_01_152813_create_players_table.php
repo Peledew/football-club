@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('ssn')->unique();
             $table->date('date_of_birth');
             $table->enum('position', ['CB', 'DMF', 'LB', 'CF']);
+            $table->string('picture');
             $table->foreignId('place_id')->constrained();
             $table->foreignId('club_id')->constrained();
             $table->timestamps();
