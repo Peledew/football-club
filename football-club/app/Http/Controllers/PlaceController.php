@@ -9,11 +9,15 @@ use Illuminate\Http\Request;
 
 class PlaceController extends Controller
 {
-    public function __construct(private IPlaceService $placeService) {}
+    private IPlaceService $_placeService;
+    public function __construct(IPlaceService $placeService)
+    {
+        $this->_placeService = $placeService;
+    }
 
     public function index()
     {
-        return response()->json($this->placeService->getAllPlaces());
+        return response()->json($this->_placeService->getAllPlaces());
     }
 
     public function store(Request $request)
@@ -24,12 +28,12 @@ class PlaceController extends Controller
         ]);
 
         $placeDTO = PlaceDTO::fromArray($fields);
-        return response()->json($this->placeService->createPlace($placeDTO), 201);
+        return response()->json($this->_placeService->createPlace($placeDTO), 201);
     }
 
     public function show(int $id)
     {
-        $place = $this->placeService->getPlaceById($id);
+        $place = $this->_placeService->getPlaceById($id);
         if (!$place) {
             return response()->json(['message' => 'Place not found'], 404);
         }
@@ -45,7 +49,7 @@ class PlaceController extends Controller
         ]);
 
         $placeDTO = PlaceDTO::fromArray($fields);
-        $place = $this->placeService->updatePlace($id, $placeDTO);
+        $place = $this->_placeService->updatePlace($id, $placeDTO);
 
         if (!$place) {
             return response()->json(['message' => 'Place not found'], 404);
@@ -56,7 +60,7 @@ class PlaceController extends Controller
 
     public function destroy(int $id)
     {
-        $deleted = $this->placeService->deletePlace($id);
+        $deleted = $this->_placeService->deletePlace($id);
 
         if (!$deleted) {
             return response()->json(['message' => 'Place not found'], 404);

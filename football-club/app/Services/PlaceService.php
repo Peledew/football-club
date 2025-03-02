@@ -10,30 +10,34 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PlaceService implements IPlaceService
 {
-    public function __construct(private IPlaceRepository $placeRepository) {}
+    private IPlaceRepository $_placeRepository;
+    public function __construct(IPlaceRepository $placeRepository)
+    {
+        $this->_placeRepository = $placeRepository;
+    }
 
     public function createPlace(PlaceDTO $placeDTO): Place
     {
-        return $this->placeRepository->create($placeDTO);
+        return $this->_placeRepository->create($placeDTO);
     }
 
     public function getAllPlaces(): Collection
     {
-        return $this->placeRepository->getAll();
+        return $this->_placeRepository->getAll();
     }
 
     public function getPlaceById(int $id): ?Place
     {
-        return $this->placeRepository->getById($id);
+        return $this->_placeRepository->getById($id);
     }
 
     public function updatePlace(int $id, PlaceDTO $placeDTO): ?Place
     {
-        return $this->placeRepository->update($id, $placeDTO);
+        return $this->_placeRepository->update($id, $placeDTO);
     }
 
     public function deletePlace(int $id): bool
     {
-        return $this->placeRepository->delete($id);
+        return $this->_placeRepository->delete($id);
     }
 }
