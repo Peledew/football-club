@@ -19,10 +19,7 @@ class ClubService implements IClubService
 
     public function create(Club $newClub): Club
     {
-        $club = new Club($newClub->toArray());
-        $this->_clubRepository->create($club);
-
-        return $club;
+        return $this->_clubRepository->create($newClub);
     }
     public function getAll(): Collection
     {

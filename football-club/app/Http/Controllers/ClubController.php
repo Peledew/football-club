@@ -71,7 +71,11 @@ class ClubController extends Controller
 
             return response()->json($club, 201); // Success
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to create club', 'error' => $e->getMessage()], 500);
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Failed to create club', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to create club', 'error' => $e->getMessage()]);
+            }
         }
     }
 
@@ -79,7 +83,6 @@ class ClubController extends Controller
     public function show(Request $request, int $id): JsonResponse|View
     {
         try {
-            // Validate ID (ensure it's a positive integer)
             if ($id <= 0) {
                 if ($request->expectsJson()) {
                     return response()->json(['message' => 'Invalid ID provided'], 400);
@@ -88,7 +91,6 @@ class ClubController extends Controller
                 }
             }
 
-            // Retrieve the club data
             $club = $this->_clubService->getById($id);
 
             // Handle "not found" case
