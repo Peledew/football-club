@@ -74,13 +74,3 @@ class PlaceController extends Controller
     }
 }
 
-//public function index(): Response
-//{
-//    $places = $this->_placeService->getAll();
-//
-//    if (request()->expectsJson()) {
-//        return response()->json($places);
-//    }
-//
-//    return view('places.index', compact('places'));
-//}

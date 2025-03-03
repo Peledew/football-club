@@ -17,29 +17,26 @@ class ClubService implements IClubService
         $this->_clubRepository = $clubRepository;
     }
 
-    public function create(ClubDTO $newClub): ClubDTO
+    public function create(Club $newClub): Club
     {
         $club = new Club($newClub->toArray());
         $this->_clubRepository->create($club);
 
-        return ClubDTO::fromModel($club);
+        return $club;
     }
     public function getAll(): Collection
     {
         return $this->_clubRepository->getAll();
     }
 
-    public function getById(int $id): ?ClubDTO
+    public function getById(int $id): Club
     {
-        $club = $this->_clubRepository->getById($id);
-        return $club ? ClubDTO::fromModel($club) : null;
+        return $this->_clubRepository->getById($id);
     }
 
-    public function update(int $id, ClubDTO $updatedClub): ?ClubDTO
+    public function update(int $id, Club $updatedClub): ?Club
     {
-        $newClubData = new Club($updatedClub->toArray());
-        $club = $this->_clubRepository->update($id, $newClubData);
-        return $club ? ClubDTO::fromModel($club) : null;
+        return $this->_clubRepository->update($id, $updatedClub);
     }
 
     public function delete(int $id): bool

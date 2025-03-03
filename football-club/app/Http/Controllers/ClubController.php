@@ -3,67 +3,210 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\ClubDTO;
+use App\Models\Club;
 use App\Services\Contracts\IClubService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Symfony\Component\Serializer\Serializer;
 
 class ClubController extends Controller
 {
     private IClubService $_clubService;
-
-    public function __construct(IClubService $clubService)
+    private Serializer $serializer;
+    public function __construct(IClubService $clubService, Serializer $serializer)
     {
         $this->_clubService = $clubService;
+        $this->serializer = $serializer;
     }
 
-    public function index()
+    public function index(): JsonResponse|View
     {
-        return response()->json($this->_clubService->getAll());
-    }
+        try {
+            $clubs = $this->_clubService->getAll();
 
-    public function store(Request $request)
-    {
-        $fields = $request->validate([
-            'name' => 'required|string|max:255',
-            'place_id' => 'required|integer|exists:places,id',
-        ]);
+            if ($clubs->isEmpty()) {
+                if (request()->expectsJson()) {
+                    return response()->json(['message' => 'No clubs found'], 404);
+                } else {
+                    return view('clubs.index', ['clubs' => $clubs, 'message' => 'No clubs found']);
+                }
+            }
 
-        $dto = ClubDTO::fromArray($fields);
-        return response()->json($this->_clubService->create($dto), 201);
-    }
-
-    public function show(int $id)
-    {
-        $club = $this->_clubService->getById($id);
-        if (!$club) {
-            return response()->json(['message' => 'Club not found'], 404);
+            if (request()->expectsJson()) {
+                return response()->json($clubs, 200);
+            } else {
+                return view('clubs.index', compact('clubs'));
+            }
+        } catch (\Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Failed to retrieve clubs', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to retrieve clubs', 'error' => $e->getMessage()]);
+            }
         }
-        return response()->json($club);
     }
 
-    public function update(Request $request, int $id)
+    public function store(Request $request): JsonResponse|View
     {
-        $fields = $request->validate([
-            'name' => 'required|string|max:255',
-            'place_id' => 'required|integer|exists:places,id',
-        ]);
-
-        $dto = ClubDTO::fromArray($fields);
-        $club = $this->_clubService->update($id, $dto);
-
-        if (!$club) {
-            return response()->json(['message' => 'Club not found'], 404);
+        if ('json' !== $request->getContentTypeFormat()) {
+            return response()->json(['message' => 'Unsupported content format'], 415);
         }
 
-        return response()->json($club);
-    }
+        $jsonData = $request->getContent();
 
-    public function destroy(int $id)
-    {
-        $deleted = $this->_clubService->delete($id);
-        if (!$deleted) {
-            return response()->json(['message' => 'Club not found'], 404);
+        // Validate JSON
+        if (empty($jsonData) || is_null(json_decode($jsonData))) {
+            return response()->json(['message' => 'Invalid JSON data'], 400);
         }
 
-        return response()->json(['message' => 'Club deleted']);
+        try {
+            $deserializedData = $this->serializer->deserialize($jsonData, Club::class, 'json');
+
+            if (empty($deserializedData->name) || empty($deserializedData->place_id)) {
+                return response()->json(['message' => 'Invalid club data'], 400);
+            }
+
+            $club = $this->_clubService->create($deserializedData);
+
+            return response()->json($club, 201); // Success
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to create club', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function show(Request $request, int $id): JsonResponse|View
+    {
+        try {
+            // Validate ID (ensure it's a positive integer)
+            if ($id <= 0) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Invalid ID provided'], 400);
+                } else {
+                    return view('errors.invalid_id', ['id' => $id]);
+                }
+            }
+
+            // Retrieve the club data
+            $club = $this->_clubService->getById($id);
+
+            // Handle "not found" case
+            if (!$club) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Club not found'], 404);
+                } else {
+                    return view('errors.club_not_found', ['id' => $id]);
+                }
+            }
+
+            // Return successful response
+            if ($request->expectsJson()) {
+                return response()->json($club);
+            } else {
+                return view('clubs.show', compact('club'));
+            }
+
+        } catch (\Exception $e) {
+            // Handle unexpected errors
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+            } else {
+                // Show a generic error view
+                return view('errors.general', ['message' => 'An unexpected error occurred']);
+            }
+        }
+    }
+
+    public function update(Request $request, int $id): JsonResponse|View
+    {
+        if ('json' !== $request->getContentTypeFormat()) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unsupported content format'], 415);
+            } else {
+                return view('errors.unsupported_format');
+            }
+        }
+
+        $jsonData = $request->getContent();
+
+        // Validate JSON
+        if (empty($jsonData) || is_null(json_decode($jsonData))) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Invalid JSON data'], 400);
+            } else {
+                return view('errors.invalid_json_data');
+            }
+        }
+
+        try {
+            $deserializedData = $this->serializer->deserialize($jsonData, Club::class, 'json');
+
+            if (empty($deserializedData->name) || empty($deserializedData->place_id)) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Invalid club data'], 400);
+                } else {
+                    return view('errors.invalid_club_data');
+                }
+            }
+
+            $club = $this->_clubService->update($id, $deserializedData);
+
+            if (!$club) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Club not found'], 404);
+                } else {
+                    return view('errors.club_not_found', ['id' => $id]);
+                }
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json($club);
+            } else {
+                return view('clubs.show', compact('club'));
+            }
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Failed to update club', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to update club', 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    public function destroy(Request $request, int $id): JsonResponse|View
+    {
+        // Validate ID (ensure it's a positive integer)
+        if ($id <= 0) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Invalid ID provided'], 400);
+            } else {
+                return view('errors.invalid_id', ['id' => $id]);
+            }
+        }
+
+        try {
+            $deleted = $this->_clubService->delete($id);
+
+            if (!$deleted) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Club not found'], 404);
+                } else {
+                    return view('errors.club_not_found', ['id' => $id]);
+                }
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Club deleted']);
+            } else {
+                return view('clubs.deleted', ['id' => $id]);
+            }
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Failed to delete club', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to delete club', 'error' => $e->getMessage()]);
+            }
+        }
     }
 }
