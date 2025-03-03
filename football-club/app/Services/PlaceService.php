@@ -16,9 +16,12 @@ class PlaceService implements IPlaceService
         $this->_placeRepository = $placeRepository;
     }
 
-    public function createPlace(PlaceDTO $placeDTO): Place
+    public function createPlace(PlaceDTO $newPlace): PlaceDTO
     {
-        return $this->_placeRepository->create($placeDTO);
+        $place = new Place($newPlace->toArray());
+        $this->_placeRepository->create($place);
+
+        return PlaceDTO::fromModel($place);
     }
 
     public function getAllPlaces(): Collection
@@ -26,14 +29,17 @@ class PlaceService implements IPlaceService
         return $this->_placeRepository->getAll();
     }
 
-    public function getPlaceById(int $id): ?Place
+    public function getPlaceById(int $id): ?PlaceDTO
     {
-        return $this->_placeRepository->getById($id);
+        $place =  $this->_placeRepository->getById($id);
+        return new PlaceDTO($place->name, $place->ptt);
     }
 
-    public function updatePlace(int $id, PlaceDTO $placeDTO): ?Place
+    public function updatePlace(int $id, PlaceDTO $updatedPlace): ?PlaceDTO
     {
-        return $this->_placeRepository->update($id, $placeDTO);
+        $place = new Place($updatedPlace->toArray());
+        $place = $this->_placeRepository->update($id, $place);
+        return $place ? PlaceDTO::fromModel($place) : null;
     }
 
     public function deletePlace(int $id): bool

@@ -9,9 +9,10 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PlaceRepository implements IPlaceRepository
 {
-    public function create(PlaceDTO $placeDTO): Place
+    public function create(Place $newPlace): Place
     {
-        return Place::create($placeDTO->toArray());
+        $newPlace->save();
+        return $newPlace;
     }
 
     public function getAll(): Collection
@@ -24,12 +25,12 @@ class PlaceRepository implements IPlaceRepository
         return Place::find($id);
     }
 
-    public function update(int $id, PlaceDTO $placeDTO): ?Place
+    public function update(int $id, Place $updatedPlace): ?Place
     {
         $place = Place::find($id);
 
         if ($place) {
-            $place->update($placeDTO->toArray());
+            $place->update($updatedPlace->toArray());
         }
 
         return $place;
