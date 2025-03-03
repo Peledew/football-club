@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\PlaceDTO;
-use App\Models\Place;
 use App\Services\Contracts\IPlaceService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PlaceController extends Controller
@@ -15,12 +15,12 @@ class PlaceController extends Controller
         $this->_placeService = $placeService;
     }
 
-    public function index()
+    public function index():JsonResponse
     {
-        return response()->json($this->_placeService->getAllPlaces());
+        return response()->json($this->_placeService->getAll());
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $fields = $request->validate([
             'name' => 'required|string|max:255',
@@ -28,12 +28,12 @@ class PlaceController extends Controller
         ]);
 
         $placeDTO = PlaceDTO::fromArray($fields);
-        return response()->json($this->_placeService->createPlace($placeDTO), 201);
+        return response()->json($this->_placeService->create($placeDTO), 201);
     }
 
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
-        $place = $this->_placeService->getPlaceById($id);
+        $place = $this->_placeService->getById($id);
         if (!$place) {
             return response()->json(['message' => 'Place not found'], 404);
         }
@@ -41,7 +41,7 @@ class PlaceController extends Controller
         return response()->json($place);
     }
 
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         $fields = $request->validate([
             'name' => 'required|string|max:255',
@@ -49,7 +49,7 @@ class PlaceController extends Controller
         ]);
 
         $placeDTO = PlaceDTO::fromArray($fields);
-        $place = $this->_placeService->updatePlace($id, $placeDTO);
+        $place = $this->_placeService->update($id, $placeDTO);
 
         if (!$place) {
             return response()->json(['message' => 'Place not found'], 404);
@@ -58,9 +58,13 @@ class PlaceController extends Controller
         return response()->json($place);
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
-        $deleted = $this->_placeService->deletePlace($id);
+        if (!is_numeric($id) || $id <= 0) {
+            return response()->json(['message' => 'Invalid ID provided'], 400);
+        }
+
+        $deleted = $this->_placeService->delete($id);
 
         if (!$deleted) {
             return response()->json(['message' => 'Place not found'], 404);
@@ -69,3 +73,14 @@ class PlaceController extends Controller
         return response()->json(['message' => 'Place was deleted']);
     }
 }
+
+//public function index(): Response
+//{
+//    $places = $this->_placeService->getAll();
+//
+//    if (request()->expectsJson()) {
+//        return response()->json($places);
+//    }
+//
+//    return view('places.index', compact('places'));
+//}

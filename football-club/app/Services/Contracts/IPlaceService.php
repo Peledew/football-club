@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface IPlaceService
 {
-    public function createPlace(PlaceDTO $newPlace): PlaceDTO;
-    public function getAllPlaces(): Collection;
-    public function getPlaceById(int $id): ?PlaceDTO;
-    public function updatePlace(int $id, PlaceDTO $updatedPlace): ?PlaceDTO;
-    public function deletePlace(int $id): bool;
+    public function create(PlaceDTO $newPlace): PlaceDTO;
+    public function getAll(): Collection;
+    public function getById(int $id): ?PlaceDTO;
+    public function update(int $id, PlaceDTO $updatedPlace): ?PlaceDTO;
+    public function delete(int $id): bool;
 }
