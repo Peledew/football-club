@@ -19,19 +19,20 @@ class ClubRepository implements IClubRepository
         return Club::find($id);
     }
 
-    public function create(ClubDTO $dto): Club
+    public function create(CLub $newClub): Club
     {
-        return Club::create($dto->toArray());
+        $newClub->save();
+        return $newClub;
     }
 
-    public function update(int $id, ClubDTO $dto): ?Club
+    public function update(int $id, Club $updatedClub): ?Club
     {
         $club = Club::find($id);
         if (!$club) {
             return null;
         }
 
-        $club->update($dto->toArray());
+        $club->update($updatedClub->toArray());
         return $club;
     }
 

@@ -3,7 +3,6 @@
 namespace App\Services\Contracts;
 
 use App\DTOs\PlaceDTO;
-use App\Models\Place;
 use Illuminate\Database\Eloquent\Collection;
 
 interface IPlaceService

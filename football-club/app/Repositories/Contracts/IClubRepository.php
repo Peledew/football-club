@@ -10,7 +10,7 @@ interface IClubRepository
 {
     public function getAll(): Collection;
     public function getById(int $id): ?Club;
-    public function create(ClubDTO $dto): Club;
-    public function update(int $id, ClubDTO $dto): ?Club;
+    public function create(Club $newClub): Club;
+    public function update(int $id, Club $updatedClub): ?Club;
     public function delete(int $id): bool;
 }

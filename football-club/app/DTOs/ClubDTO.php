@@ -9,6 +9,10 @@ class ClubDTO
         public int $place_id
     ) {}
 
+    public static function fromModel($club): self
+    {
+        return new self($club->name, $club->place_id);
+    }
     public static function fromArray(array $data): self
     {
         return new self(

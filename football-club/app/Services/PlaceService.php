@@ -32,13 +32,13 @@ class PlaceService implements IPlaceService
     public function getById(int $id): ?PlaceDTO
     {
         $place =  $this->_placeRepository->getById($id);
-        return new PlaceDTO($place->name, $place->ptt);
+        return $place ? PlaceDTO::fromModel($place) : null;
     }
 
     public function update(int $id, PlaceDTO $updatedPlace): ?PlaceDTO
     {
-        $place = new Place($updatedPlace->toArray());
-        $place = $this->_placeRepository->update($id, $place);
+        $newPlaceData = new Place($updatedPlace->toArray());
+        $place = $this->_placeRepository->update($id, $newPlaceData);
         return $place ? PlaceDTO::fromModel($place) : null;
     }
 
