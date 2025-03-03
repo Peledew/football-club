@@ -87,28 +87,30 @@ class ClubController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json(['message' => 'Invalid ID provided'], 400);
                 } else {
-                    return view('errors.invalid_id', ['id' => $id]);
+                    return view('errors.general', ['id' => $id]);
                 }
             }
 
             $club = $this->_clubService->getById($id);
 
-            // Handle "not found" case
+            if (!$club) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Club not found'], 404);
+                } else {
+                    return view('errors.general', ['id' => $id]);
+                }
+            }
 
-            // Return successful response
             if ($request->expectsJson()) {
                 return response()->json($club);
             } else {
                 return view('clubs.show', compact('club'));
             }
-
         } catch (Exception $e) {
-            // Handle unexpected errors
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+                return response()->json(['message' => 'Failed to retrieve club', 'error' => $e->getMessage()], 500);
             } else {
-                // Show a generic error view
-                return view('errors.general', ['message' => 'An unexpected error occurred']);
+                return view('errors.general', ['message' => 'Failed to retrieve club', 'error' => $e->getMessage()]);
             }
         }
     }

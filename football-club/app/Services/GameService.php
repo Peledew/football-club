@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services\Contracts;
+namespace App\Services;
 
 use App\Models\Game;
 use App\Repositories\Contracts\IGameRepository;
+use App\Services\Contracts\IGameService;
 use Illuminate\Database\Eloquent\Collection;
 
 class GameService implements IGameService

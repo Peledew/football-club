@@ -26,7 +26,7 @@ class ClubService implements IClubService
         return $this->_clubRepository->getAll();
     }
 
-    public function getById(int $id): Club
+    public function getById(int $id): ?Club
     {
         return $this->_clubRepository->getById($id);
     }
