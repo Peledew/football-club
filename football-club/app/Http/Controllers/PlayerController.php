@@ -2,47 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Place;
-use App\Services\Contracts\IPlaceService;
+use App\Models\Player;
+use App\Services\Contracts\IPlayerService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\Serializer\Serializer;
 
-class PlaceController extends Controller
+class PlayerController extends Controller
 {
-    private IPlaceService $_placeService;
+    private IPlayerService $_playerService;
     private Serializer $serializer;
-    public function __construct(IPlaceService $placeService, Serializer $serializer)
+
+    public function __construct(IPlayerService $playerService, Serializer $serializer)
     {
-        $this->_placeService = $placeService;
+        $this->_playerService = $playerService;
         $this->serializer = $serializer;
     }
 
     public function index(): JsonResponse|View
     {
         try {
-            $places = $this->_placeService->getAll();
+            $players = $this->_playerService->getAll();
 
-            if ($places->isEmpty()) {
+            if ($players->isEmpty()) {
                 if (request()->expectsJson()) {
-                    return response()->json(['message' => 'No places found'], 404);
+                    return response()->json(['message' => 'No players found'], 404);
                 } else {
-                    return view('places.index', ['places' => $places, 'message' => 'No places found']);
+                    return view('players.index', ['players' => $players, 'message' => 'No players found']);
                 }
             }
 
             if (request()->expectsJson()) {
-                return response()->json($places);
+                return response()->json($players);
             } else {
-                return view('places.index', compact('places'));
+                return view('players.index', compact('players'));
             }
         } catch (Exception $e) {
             if (request()->expectsJson()) {
-                return response()->json(['message' => 'Failed to retrieve places', 'error' => $e->getMessage()], 500);
+                return response()->json(['message' => 'Failed to retrieve players', 'error' => $e->getMessage()], 500);
             } else {
-                return view('errors.general', ['message' => 'Failed to retrieve places', 'error' => $e->getMessage()]);
+                return view('errors.general', ['message' => 'Failed to retrieve players', 'error' => $e->getMessage()]);
             }
         }
     }
@@ -55,22 +56,21 @@ class PlaceController extends Controller
 
         $jsonData = $request->getContent();
 
-        // Validate JSON
         if (empty($jsonData) || is_null(json_decode($jsonData))) {
             return response()->json(['message' => 'Invalid JSON data'], 400);
         }
 
         try {
-            $deserializedData = $this->serializer->deserialize($jsonData, Place::class, 'json');
+            $deserializedData = $this->serializer->deserialize($jsonData, Player::class, 'json');
 
-            $place = $this->_placeService->create($deserializedData);
+            $player = $this->_playerService->create($deserializedData);
 
-            return response()->json($place, 201); // Success
+            return response()->json($player, 201);
         } catch (Exception $e) {
             if (request()->expectsJson()) {
-                return response()->json(['message' => 'Failed to create place', 'error' => $e->getMessage()], 500);
+                return response()->json(['message' => 'Failed to create player', 'error' => $e->getMessage()], 500);
             } else {
-                return view('errors.general', ['message' => 'Failed to create place', 'error' => $e->getMessage()]);
+                return view('errors.general', ['message' => 'Failed to create player', 'error' => $e->getMessage()]);
             }
         }
     }
@@ -86,22 +86,22 @@ class PlaceController extends Controller
                 }
             }
 
-            $place = $this->_placeService->getById($id);
+            $player = $this->_playerService->getById($id);
 
-            if (!$place) {
+            if (!$player) {
                 if ($request->expectsJson()) {
-                    return response()->json(['message' => 'Place not found'], 404);
+                    return response()->json(['message' => 'Player not found'], 404);
                 } else {
                     return view('errors.general', ['id' => $id]);
                 }
             }
 
-            return response()->json($place);
+            return response()->json($player);
         } catch (Exception $e) {
             if (request()->expectsJson()) {
-                return response()->json(['message' => 'Failed to retrieve place', 'error' => $e->getMessage()], 500);
+                return response()->json(['message' => 'Failed to retrieve player', 'error' => $e->getMessage()], 500);
             } else {
-                return view('errors.general', ['message' => 'Failed to retrieve place', 'error' => $e->getMessage()]);
+                return view('errors.general', ['message' => 'Failed to retrieve player', 'error' => $e->getMessage()]);
             }
         }
     }
@@ -118,7 +118,6 @@ class PlaceController extends Controller
 
         $jsonData = $request->getContent();
 
-        // Validate JSON
         if (empty($jsonData) || is_null(json_decode($jsonData))) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Invalid JSON data'], 400);
@@ -128,35 +127,34 @@ class PlaceController extends Controller
         }
 
         try {
-            $deserializedData = $this->serializer->deserialize($jsonData, Place::class, 'json');
+            $deserializedData = $this->serializer->deserialize($jsonData, Player::class, 'json');
 
-            $place = $this->_placeService->update($id, $deserializedData);
+            $player = $this->_playerService->update($id, $deserializedData);
 
-            if (!$place) {
+            if (!$player) {
                 if ($request->expectsJson()) {
-                    return response()->json(['message' => 'Place not found'], 404);
+                    return response()->json(['message' => 'Player not found'], 404);
                 } else {
                     return view('errors.general', ['id' => $id]);
                 }
             }
 
             if ($request->expectsJson()) {
-                return response()->json($place);
+                return response()->json($player);
             } else {
-                return view('place.show', compact('place'));
+                return view('players.show', compact('player'));
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Failed to update place', 'error' => $e->getMessage()], 500);
+                return response()->json(['message' => 'Failed to update player', 'error' => $e->getMessage()], 500);
             } else {
-                return view('errors.general', ['message' => 'Failed to update place', 'error' => $e->getMessage()]);
+                return view('errors.general', ['message' => 'Failed to update player', 'error' => $e->getMessage()]);
             }
         }
     }
 
     public function destroy(Request $request, int $id): JsonResponse|View
     {
-        // Validate ID (ensure it's a positive integer)
         if ($id <= 0) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Invalid ID provided'], 400);
@@ -166,28 +164,27 @@ class PlaceController extends Controller
         }
 
         try {
-            $deleted = $this->_placeService->delete($id);
+            $deleted = $this->_playerService->delete($id);
 
             if (!$deleted) {
                 if ($request->expectsJson()) {
-                    return response()->json(['message' => 'Place not found'], 404);
+                    return response()->json(['message' => 'Player not found'], 404);
                 } else {
-                    return view('errors.general', ['message' => 'Failed to find place']);
+                    return view('errors.general', ['message' => 'Failed to find player']);
                 }
             }
 
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Place deleted']);
+                return response()->json(['message' => 'Player deleted']);
             } else {
-                return view('places.deleted', ['id' => $id]);
+                return view('players.deleted', ['id' => $id]);
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Failed to delete place', 'error' => $e->getMessage()], 500);
+                return response()->json(['message' => 'Failed to delete player', 'error' => $e->getMessage()], 500);
             } else {
-                return view('errors.general', ['message' => 'Failed to delete place', 'error' => $e->getMessage()]);
+                return view('errors.general', ['message' => 'Failed to delete player', 'error' => $e->getMessage()]);
             }
         }
     }
 }
-

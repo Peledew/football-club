@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\DTOs\ClubDTO;
 use App\Models\Club;
 use App\Services\Contracts\IClubService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -34,11 +34,11 @@ class ClubController extends Controller
             }
 
             if (request()->expectsJson()) {
-                return response()->json($clubs, 200);
+                return response()->json($clubs);
             } else {
                 return view('clubs.index', compact('clubs'));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Failed to retrieve clubs', 'error' => $e->getMessage()], 500);
             } else {
@@ -70,7 +70,7 @@ class ClubController extends Controller
             $club = $this->_clubService->create($deserializedData);
 
             return response()->json($club, 201); // Success
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Failed to create club', 'error' => $e->getMessage()], 500);
             } else {
@@ -94,13 +94,6 @@ class ClubController extends Controller
             $club = $this->_clubService->getById($id);
 
             // Handle "not found" case
-            if (!$club) {
-                if ($request->expectsJson()) {
-                    return response()->json(['message' => 'Club not found'], 404);
-                } else {
-                    return view('errors.club_not_found', ['id' => $id]);
-                }
-            }
 
             // Return successful response
             if ($request->expectsJson()) {
@@ -109,7 +102,7 @@ class ClubController extends Controller
                 return view('clubs.show', compact('club'));
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Handle unexpected errors
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
@@ -167,7 +160,7 @@ class ClubController extends Controller
             } else {
                 return view('clubs.show', compact('club'));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Failed to update club', 'error' => $e->getMessage()], 500);
             } else {
@@ -203,7 +196,7 @@ class ClubController extends Controller
             } else {
                 return view('clubs.deleted', ['id' => $id]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Failed to delete club', 'error' => $e->getMessage()], 500);
             } else {

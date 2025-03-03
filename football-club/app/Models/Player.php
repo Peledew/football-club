@@ -34,26 +34,4 @@ class Player extends User
         return $this->hasMany(Performance::class);
     }
 
-    // Picture validation rules
-//    public static function rules()
-//    {
-//        return [
-//            'name' => 'required|string|max:255',
-//            'last_name' => 'required|string|max:255',
-//            'ssn' => 'required|unique:players|size:11',
-//            'date_of_birth' => 'required|date',
-//            'position' => 'required|in:CB,DMF,LB,CF',
-//            'place_id' => 'required|exists:places,id',
-//            'club_id' => 'required|exists:clubs,id',
-//            'picture' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-//        ];
-//    }
-
-    // Helper function to store picture
-    public function storePicture($file)
-    {
-        $path = $file->store('players_pictures', 'public');
-        $this->picture = $path;
-        $this->save();
-    }
 }
