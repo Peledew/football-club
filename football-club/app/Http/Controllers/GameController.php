@@ -65,7 +65,12 @@ class GameController extends Controller
 
             $game = $this->_gameService->create($deserializedData);
 
-            return response()->json($game, 201);
+            if ($request->expectsJson()) {
+                return JsonResponse::fromJsonString($game);
+            } else {
+                return view('games.show', compact('game'));
+            }
+
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Failed to create game', 'error' => $e->getMessage()], 500);
@@ -196,6 +201,14 @@ class GameController extends Controller
     public function edit(Game $game)
     {
         return view('games.edit', compact('game'));
+    }
+
+    public function create()
+    {
+//        $games = $this->_gameService->getAll();
+
+        return view('games.create');
+
     }
 
 }

@@ -3,15 +3,19 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\IClubRepository;
+use App\Repositories\Contracts\ICompetitionRepository;
 use App\Repositories\Contracts\IGameRepository;
 use App\Repositories\Contracts\IPlaceRepository;
 use App\Repositories\Contracts\IPlayerRepository;
 use App\Repositories\Eloquent\ClubRepository;
+use App\Repositories\Eloquent\CompetitionRepository;
 use App\Repositories\Eloquent\GameRepository;
 use App\Repositories\Eloquent\PlaceRepository;
 use App\Repositories\Eloquent\PlayerRepository;
 use App\Services\ClubService;
+use App\Services\CompetitionService;
 use App\Services\Contracts\IClubService;
+use App\Services\Contracts\ICompetitionService;
 use App\Services\Contracts\IGameService;
 use App\Services\Contracts\IPlaceService;
 use App\Services\Contracts\IPlayerService;
@@ -42,6 +46,11 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(IGameRepository::class, GameRepository::class);
         $this->app->bind(IGameService::class, GameService::class);
+
+        $this->app->bind(ICompetitionRepository::class, CompetitionRepository::class);
+        $this->app->bind(ICompetitionService::class, CompetitionService::class);
+
+
 
         // Register the Serializer manually
         $this->app->singleton(Serializer::class, function ($app) {
