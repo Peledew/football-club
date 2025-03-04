@@ -21,6 +21,7 @@
                     <td>{{ $place->ptt }}</td>
                     <td>
                         <a href="{{ route('places.show', $place->id) }}" class="btn btn-info btn-sm">View</a>
+                        <a href="{{ route('places.edit', $place->id) }}" class="btn btn-primary btn-sm">Edit</a>
                         <form action="{{ route('places.destroy', $place->id) }}" method="POST"
                               style="display: inline-block;">
                             @csrf

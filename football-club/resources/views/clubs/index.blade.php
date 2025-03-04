@@ -18,8 +18,8 @@
                     <td>{{ $club->name }}</td>
                     <td>{{ $club->place->name }}</td>
                     <td>
-                        <a href="{{ route('clubs.edit', $club->id) }}" class="btn btn-primary btn-sm">Edit</a>
                         <a href="{{ route('clubs.show', $club->id) }}" class="btn btn-info btn-sm">View</a>
+                        <a href="{{ route('clubs.edit', $club->id) }}" class="btn btn-primary btn-sm">Edit</a>
                         <form action="{{ route('clubs.destroy', $club->id) }}" method="POST"
                               style="display: inline-block;">
                             @csrf

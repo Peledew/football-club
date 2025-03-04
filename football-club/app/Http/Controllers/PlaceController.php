@@ -195,5 +195,40 @@ class PlaceController extends Controller
             }
         }
     }
+
+    public function edit(Request $request, int $id): JsonResponse|View
+    {
+        if ($id <= 0) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Invalid ID provided'], 400);
+            } else {
+                return view('errors.general', ['message' => 'Invalid ID provided']);
+            }
+        }
+
+        try {
+            $place = $this->_placeService->getById($id);
+
+            if (!$place) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Place not found'], 404);
+                } else {
+                    return view('errors.general', ['message' => 'Place not found']);
+                }
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json($place);
+            } else {
+                return view('places.edit', compact('place'));
+            }
+        } catch (Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Failed to retrieve place for editing', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to retrieve place for editing', 'error' => $e->getMessage()]);
+            }
+        }
+    }
 }
 
