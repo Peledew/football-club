@@ -6,6 +6,7 @@ use App\Models\Place;
 use App\Services\Contracts\IPlaceService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\Serializer\Serializer;
@@ -117,7 +118,7 @@ class PlaceController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Unsupported content format'], 415);
             } else {
-                return view('errors.unsupported_format');
+                return view('errors.general', ['message' => 'Unsupported content format']);
             }
         }
 
@@ -128,7 +129,7 @@ class PlaceController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Invalid JSON data'], 400);
             } else {
-                return view('errors.invalid_json_data');
+                return view('errors.general', ['message' => 'Invalid JSON data']);
             }
         }
 
@@ -159,14 +160,14 @@ class PlaceController extends Controller
         }
     }
 
-    public function destroy(Request $request, int $id): JsonResponse|View
+    public function destroy(Request $request, int $id): JsonResponse|View|RedirectResponse
     {
         // Validate ID (ensure it's a positive integer)
         if ($id <= 0) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Invalid ID provided'], 400);
             } else {
-                return view('errors.invalid_id', ['id' => $id]);
+                return view('errors.general', ['message' => 'Invalid ID provided']);
             }
         }
 
@@ -184,7 +185,7 @@ class PlaceController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Place deleted']);
             } else {
-                return view('places.deleted', ['id' => $id]);
+                return redirect()->route('places.index');
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {

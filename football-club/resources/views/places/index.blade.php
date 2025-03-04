@@ -2,13 +2,35 @@
 
 @section('content')
     <div class="container">
-        <h1>Place Details</h1>
-
-
-        <ul>
+        <h1>Places</h1>
+        <a href="{{ route('places.create') }}" class="btn btn-primary">Create New Place</a>
+        <table class="table mt-3">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>PTT</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
             @foreach ($places as $place)
-                <li>{{ $place->name }}</li>
+                <tr>
+                    <td>{{ $place->id }}</td>
+                    <td>{{ $place->name }}</td>
+                    <td>{{ $place->ptt }}</td>
+                    <td>
+                        <a href="{{ route('places.show', $place->id) }}" class="btn btn-info btn-sm">View</a>
+                        <form action="{{ route('places.destroy', $place->id) }}" method="POST"
+                              style="display: inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
             @endforeach
-        </ul>
+            </tbody>
+        </table>
     </div>
 @endsection

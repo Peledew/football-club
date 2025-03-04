@@ -7,4 +7,7 @@ use Illuminate\Support\Facades\Route;
 //    return view('welcome');
 //});
 
-Route::resource('games', GameController::class);
+Route::get('/places/create', function () {
+    return view('places.create');
+})->name('places.create');
+
