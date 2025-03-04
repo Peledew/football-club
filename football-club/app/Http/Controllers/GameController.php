@@ -96,7 +96,12 @@ class GameController extends Controller
                 }
             }
 
-            return response()->json($game);
+            if ($request->expectsJson()) {
+                return JsonResponse::fromJsonString($game);
+            } else {
+                return view('games.show', compact('game'));
+            }
+
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Failed to retrieve game', 'error' => $e->getMessage()], 500);
@@ -142,7 +147,7 @@ class GameController extends Controller
             if ($request->expectsJson()) {
                 return response()->json($game);
             } else {
-                return view('game.show', compact('game'));
+                return view('games.show', compact('game'));
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {
@@ -187,5 +192,11 @@ class GameController extends Controller
             }
         }
     }
+
+    public function edit(Game $game)
+    {
+        return view('games.edit', compact('game'));
+    }
+
 }
 

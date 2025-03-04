@@ -96,7 +96,12 @@ class PlaceController extends Controller
                 }
             }
 
-            return response()->json($place);
+            if (request()->expectsJson()) {
+                return response()->json($place);
+            } else {
+                return view('places.show', compact('place'));
+            }
+
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Failed to retrieve place', 'error' => $e->getMessage()], 500);
@@ -143,7 +148,7 @@ class PlaceController extends Controller
             if ($request->expectsJson()) {
                 return response()->json($place);
             } else {
-                return view('place.show', compact('place'));
+                return view('places.show', compact('place'));
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {
