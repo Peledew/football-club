@@ -7,7 +7,7 @@
         <table class="table">
             <tr>
                 <th>Date:</th>
-                <td>{{ $game->date }}</td>
+                <td>{{ $game->date_of_event }}</td>
             </tr>
             <tr>
                 <th>Home Club:</th>

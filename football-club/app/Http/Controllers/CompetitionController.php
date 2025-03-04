@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Services\Contracts\ICompetitionService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\Serializer\Serializer;
@@ -116,7 +117,7 @@ class CompetitionController extends Controller
         }
     }
 
-    public function update(Request $request, int $id): JsonResponse|View
+    public function update(Request $request, int $id): JsonResponse|View|RedirectResponse
     {
         if ('json' !== $request->getContentTypeFormat()) {
             if ($request->expectsJson()) {
@@ -163,7 +164,7 @@ class CompetitionController extends Controller
         }
     }
 
-    public function destroy(Request $request, int $id): JsonResponse|View
+    public function destroy(Request $request, int $id): JsonResponse|View|RedirectResponse
     {
         if ($id <= 0) {
             if ($request->expectsJson()) {
@@ -187,7 +188,7 @@ class CompetitionController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Competition deleted']);
             } else {
-                return view('competitions.index', ['id' => $id]);
+                return redirect()->route('competitions.index');
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {
@@ -198,14 +199,33 @@ class CompetitionController extends Controller
         }
     }
 
-    public function edit(Competition $competition)
+
+    public function edit(Request $request, int $id): JsonResponse|View
     {
-        return view('competitions.edit', compact('competition'));
+        if ($id <= 0) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Invalid ID provided'], 400);
+            } else {
+                return view('errors.general', ['message' => 'Invalid ID provided']);
+            }
+        }
+
+        try {
+            $competition = Competition::findOrFail($id);
+
+            if ($request->expectsJson()) {
+                return response()->json($competition);
+            } else {
+                return view('competitions.edit', compact('competition'));
+            }
+        } catch (Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Failed to retrieve competition for editing', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to retrieve competition for editing', 'error' => $e->getMessage()]);
+            }
+        }
     }
 
-    public function create()
-    {
-        return view('competitions.create');
-    }
 }
 
