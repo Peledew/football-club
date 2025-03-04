@@ -12,7 +12,7 @@
                 <input type="text" name="name" id="name" value="{{ $competition->name }}" class="form-control" required>
             </div>
 
-            <button id="update-competition-button" type="submit" class="btn btn-success mt-3">Save Changes</button>
+            <button id="update-competition-button" type="button" class="btn btn-success mt-3">Save Changes</button>
             <a href="{{ route('competitions.index') }}" class="btn btn-secondary mt-3">Cancel</a>
         </form>
     </div>

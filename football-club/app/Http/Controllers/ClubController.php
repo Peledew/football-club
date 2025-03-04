@@ -6,6 +6,7 @@ use App\Models\Club;
 use App\Services\Contracts\IClubService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\Serializer\Serializer;
@@ -121,7 +122,7 @@ class ClubController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Unsupported content format'], 415);
             } else {
-                return view('errors.unsupported_format');
+                return view('errors.general', ['message' => 'Unsupported content format']);
             }
         }
 
@@ -132,7 +133,7 @@ class ClubController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Invalid JSON data'], 400);
             } else {
-                return view('errors.invalid_json_data');
+                return view('errors.general', ['message' => 'Invalid JSON data']);
             }
         }
 
@@ -143,7 +144,7 @@ class ClubController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json(['message' => 'Invalid club data'], 400);
                 } else {
-                    return view('errors.invalid_club_data');
+                    return view('errors.general', ['message' => 'Invalid club data']);
                 }
             }
 
@@ -153,7 +154,7 @@ class ClubController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json(['message' => 'Club not found'], 404);
                 } else {
-                    return view('errors.club_not_found', ['id' => $id]);
+                    return view('errors.general', ['message' => 'Club not found']);
                 }
             }
 
@@ -171,14 +172,14 @@ class ClubController extends Controller
         }
     }
 
-    public function destroy(Request $request, int $id): JsonResponse|View
+    public function destroy(Request $request, int $id): JsonResponse|View|RedirectResponse
     {
         // Validate ID (ensure it's a positive integer)
         if ($id <= 0) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Invalid ID provided'], 400);
             } else {
-                return view('errors.invalid_id', ['id' => $id]);
+                return view('errors.general', ['message' => 'Invalid ID provided']);
             }
         }
 
@@ -189,20 +190,55 @@ class ClubController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json(['message' => 'Club not found'], 404);
                 } else {
-                    return view('errors.club_not_found', ['id' => $id]);
+                    return view('errors.general', ['message' => 'Club not found']);
                 }
             }
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Club deleted']);
             } else {
-                return view('clubs.deleted', ['id' => $id]);
+                return redirect()->route('clubs.index');
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Failed to delete club', 'error' => $e->getMessage()], 500);
             } else {
                 return view('errors.general', ['message' => 'Failed to delete club', 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    public function edit(Request $request, int $id): JsonResponse|View
+    {
+        if ($id <= 0) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Invalid ID provided'], 400);
+            } else {
+                return view('errors.general', ['message' => 'Invalid ID provided']);
+            }
+        }
+
+        try {
+            $club = $this->_clubService->getById($id);
+
+            if (!$club) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Club not found'], 404);
+                } else {
+                    return view('errors.general', ['message' => 'Club not found']);
+                }
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json($club);
+            } else {
+                return view('clubs.edit', compact('club'));
+            }
+        } catch (Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Failed to retrieve club for editing', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to retrieve club for editing', 'error' => $e->getMessage()]);
             }
         }
     }
