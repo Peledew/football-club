@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Services\Contracts\IGameService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\Serializer\Serializer;
@@ -163,7 +164,7 @@ class GameController extends Controller
         }
     }
 
-    public function destroy(Request $request, int $id): JsonResponse|View
+    public function destroy(Request $request, int $id): JsonResponse|View|RedirectResponse
     {
         if ($id <= 0) {
             if ($request->expectsJson()) {
@@ -187,7 +188,7 @@ class GameController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Game deleted']);
             } else {
-                return view('games.deleted', ['id' => $id]);
+                return redirect()->route('games.index');
             }
         } catch (Exception $e) {
             if ($request->expectsJson()) {

@@ -9,17 +9,13 @@
                 <label for="date_of_event">Date of Event</label>
                 <input type="date" name="date_of_event" id="date_of_event" class="form-control" required>
             </div>
-{{--            <div class="form-group mt-3">--}}
-{{--                <label for="competition_id">Competition</label>--}}
-{{--                <select name="competition_id" id="competition_id" required>--}}
-{{--                    @foreach($competitions as $competition)--}}
-{{--                        <option value="{{ $competition->id }}">{{ $competition->name }}</option>--}}
-{{--                    @endforeach--}}
-{{--                </select>--}}
-{{--                @error('competition_id')--}}
-{{--                <span class="text-danger">{{ $message }}</span>--}}
-{{--                @enderror--}}
-{{--            </div>--}}
+            <div class="form-group mt-3">
+                <label for="competition_id">Competition</label>
+                <select name="competition_id" id="competition_id" required></select>
+                @error('competition_id')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
             <div class="form-group mt-3">
                 <label for="home_club_id">Home Club</label>
                 <select name="home_club_id" id="home_club_id"></select>
@@ -29,7 +25,7 @@
                 <select name="guest_club_id" id="guest_club_id"></select>
             </div>
             <div class="form-group mt-3">
-                <button type="submit" class="btn btn-success" formaction="{{ route('games.store') }}" formmethod="POST">
+                <button type="button" class="btn btn-success" id="create-game-button">
                     Create
                 </button>
                 <a href="{{ route('games.index') }}" class="btn btn-secondary">Cancel</a>
@@ -39,13 +35,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('select');
-            var instances = M.FormSelect.init(elems);
+            let elems = document.querySelectorAll('select');
+            let instances = M.FormSelect.init(elems);
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('.datepicker');
-            var instances = M.Datepicker.init(elems);
+            let elems = document.querySelectorAll('.datepicker');
+            let instances = M.Datepicker.init(elems);
         });
 
         const formatDateToISO = (date) => {
@@ -91,6 +87,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const homeClubSelect = document.getElementById('home_club_id');
             const guestClubSelect = document.getElementById('guest_club_id');
+            const competitionSelect = document.getElementById('competition_id');
 
             fetch('/api/clubs', {
                 method: 'GET',
@@ -110,31 +107,66 @@
                 })
                 .catch(error => console.error('Error fetching clubs:', error));
 
+            fetch('/api/competitions', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        populateSelect(competitionSelect, data);
+                    } else {
+                        console.error('Unexpected data format:', data);
+                    }
+                })
+                .catch(error => console.error('Error fetching competitions:', error));
+
             // Initialize all select elements at the start
             const elems = document.querySelectorAll('select');
             M.FormSelect.init(elems);
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const createButton = document.getElementById('create-game-button');
 
-        // Fetch competitions data
-        // fetch('/api/competitions', {
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const competitionSelect = document.getElementById('competition_id');
-        //         competitionSelect.innerHTML = ''; // Clear existing options
-        //         data.forEach(competition => {
-        //             const option = document.createElement('option');
-        //             option.value = competition.id;
-        //             option.textContent = competition.name;
-        //             competitionSelect.appendChild(option);
-        //         });
-        //     })
-        //     .catch(error => console.error('Error fetching competitions:', error));
+            createButton.addEventListener('click', function () {
+                const dateOfEvent = document.getElementById('date_of_event').value;
+                const competitionId = document.getElementById('competition_id').value;
+                const homeClubId = document.getElementById('home_club_id').value;
+                const guestClubId = document.getElementById('guest_club_id').value;
+
+                const requestData = {
+                    date_of_event: dateOfEvent,
+                    competition_id: competitionId,
+                    home_club_id: homeClubId,
+                    guest_club_id: guestClubId,
+                };
+
+                fetch('{{ route('games.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify(requestData),
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '{{ route('games.index') }}';
+                        } else {
+                            console.error('Error creating game:', response);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while creating the game.');
+                    });
+            });
+        });
     </script>
 
 @endsection

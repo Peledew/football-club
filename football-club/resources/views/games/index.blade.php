@@ -8,7 +8,7 @@
             <thead>
             <tr>
                 <th>#</th>
-                <th>Title</th>
+                <th>Competition name</th>
                 <th>Actions</th>
             </tr>
             </thead>
