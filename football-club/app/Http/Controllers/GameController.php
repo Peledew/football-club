@@ -200,6 +200,41 @@ class GameController extends Controller
         }
     }
 
+    public function edit(Request $request, int $id): JsonResponse|View
+    {
+        if ($id <= 0) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Invalid ID provided'], 400);
+            } else {
+                return view('errors.general', ['message' => 'Invalid ID provided']);
+            }
+        }
+
+        try {
+            $game = $this->_gameService->getById($id);
+
+            if (!$game) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Game not found'], 404);
+                } else {
+                    return view('errors.general', ['message' => 'Game not found']);
+                }
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json($game);
+            } else {
+                return view('games.edit', compact('game'));
+            }
+        } catch (Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Failed to retrieve game for editing', 'error' => $e->getMessage()], 500);
+            } else {
+                return view('errors.general', ['message' => 'Failed to retrieve game for editing', 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
 
 }
 
