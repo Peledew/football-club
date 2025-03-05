@@ -6,9 +6,9 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\PlaceController;
 use Illuminate\Support\Facades\Route;
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Route::get('/places/create', function () {
     return view('places.create');
