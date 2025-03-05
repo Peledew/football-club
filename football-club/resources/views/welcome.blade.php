@@ -28,8 +28,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             const loginButton = document.getElementById('login_button');
 
-            loginButton.addEventListener('click', function (event) {
+            loginButton.addEventListener('click', async function (event) {
                 event.preventDefault();
+
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
 
@@ -38,27 +39,30 @@
                     password: password
                 };
 
-                fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                    body: JSON.stringify(requestData),
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log(response);
-                            // window.location.href = '/dashboard';
-                        } else {
-                            console.error('Error login in: ', response);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while login in.');
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify(requestData),
                     });
+
+                    if (response.ok) {
+                        const jsonData = await response.json();
+                        localStorage.setItem('auth_token', jsonData.token);
+
+                        window.location.href = '/dashboard';
+                    } else {
+                        console.error('Error logging in:', response);
+                        alert('Invalid credentials or login failed.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while logging in.');
+                }
             });
         });
 

@@ -24,6 +24,6 @@ return [
 
     'max_age' => 0, // Set how long (in seconds) the response from a preflight request is cached. Use 0 for no caching.
 
-    'supports_credentials' => false, // Set to true to include cookies or authorization headers in the request.
+    'supports_credentials' => true, // Set to true to include cookies or authorization headers in the request.
 
 ];
