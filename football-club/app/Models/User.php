@@ -31,6 +31,17 @@ class User extends Authenticatable
         return $this->hasOne(Player::class);
     }
 
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    public function hasAnyRole(array $roles)
+    {
+        return in_array($this->role, $roles);
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -26,6 +26,7 @@ use App\Services\GameService;
 use App\Services\PerformanceService;
 use App\Services\PlaceService;
 use App\Services\PlayerService;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -71,8 +72,14 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot() : void
     {
-        //
+        Gate::define('access-admin', function ($user) {
+            return $user->role === 'ADMIN';
+        });
+
+        Gate::define('access-player', function ($user) {
+            return $user->role === 'PLAYER';
+        });
     }
 }

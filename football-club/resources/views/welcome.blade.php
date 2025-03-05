@@ -49,8 +49,10 @@
                     })
                     .then(data => {
                         localStorage.setItem('auth_token', data.token);
-                        console.log('Login successful:', data);
-                        window.location.href = '/dashboard';
+                        localStorage.setItem('role', data.user.role);
+                        // console.log('Login successful:', data);
+                        // console.log("ROLA:" ,data.user.role);
+                         window.location.href = '/dashboard';
 
 
                     })
