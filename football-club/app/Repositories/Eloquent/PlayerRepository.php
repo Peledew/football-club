@@ -20,9 +20,6 @@ class PlayerRepository implements IPlayerRepository
         return $newPlayer;
     }
 
-
-
-
     public function getAll(): Collection
     {
         return Player::all();

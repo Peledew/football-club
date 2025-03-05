@@ -3,7 +3,9 @@
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\CompetitionController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\PlayerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,3 +40,17 @@ Route::get('/clubs/create', function () {
 
 Route::get('/clubs/{id}/edit', [ClubController::class, 'edit'])->name('clubs.edit');
 Route::put('/clubs/{id}', [ClubController::class, 'update'])->name('clubs.update');
+
+Route::get('/players/create', function () {
+    return view('players.create');
+})->name('players.create');
+
+Route::get('/players/{id}/edit', [PlayerController::class, 'edit'])->name('player.edit');
+Route::put('/players/{id}', [PlayerController::class, 'update'])->name('player.update');
+
+Route::get('/performances/create', function () {
+    return view('performances.create');
+})->name('performances.create');
+
+Route::get('/performances/{id}/edit', [PerformanceController::class, 'edit'])->name('performances.edit');
+Route::put('/performances/{id}', [PerformanceController::class, 'update'])->name('performances.update');

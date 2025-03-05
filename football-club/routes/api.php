@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\CompetitionController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlayerController;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ Route::apiResource('clubs', ClubController::class);
 Route::apiResource('players', PlayerController::class);
 Route::apiResource('games', GameController::class);
 Route::apiResource('competitions', CompetitionController::class);
+Route::apiResource('performances', PerformanceController::class);
 
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
