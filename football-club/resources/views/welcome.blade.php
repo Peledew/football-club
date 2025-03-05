@@ -57,11 +57,9 @@
                         window.location.href = '/dashboard';
                     } else {
                         console.error('Error logging in:', response);
-                        alert('Invalid credentials or login failed.');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('An error occurred while logging in.');
                 }
             });
         });

@@ -28,6 +28,8 @@ use App\Services\PlaceService;
 use App\Services\PlayerService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\Sanctum;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -74,6 +76,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot():void
     {
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+
         Gate::define('access-admin', function ($user) {
             return $user->role === 'ADMIN';
         });

@@ -7,6 +7,7 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Middleware\AuthTokenMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
