@@ -105,7 +105,6 @@ class GameController extends Controller
             if ($request->expectsJson()) {
                 return JsonResponse::fromJsonString($game);
             } else {
-                $game->load(['performances.player', 'performances.game']);
                 return view('games.show', compact('game'));
             }
 

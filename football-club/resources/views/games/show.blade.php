@@ -40,15 +40,15 @@
                 @foreach ($game->performances as $performance)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $performance->player->last_name }}</td>
-                        <td>{{ $performance->player->club->name }}</td>
-                        <td>{{ $performance-> player_score}}</td>
+                        <td>{{ $performance->player->name }}</td>
+                        <td>{{ $performance->club->name }}</td>
+                        <td>{{ $performance->stats }}</td>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
         @endif
-        <br>
+
         <a href="{{ route('games.index') }}" class="btn btn-secondary mt-3">Back to List</a>
     </div>
 @endsection
