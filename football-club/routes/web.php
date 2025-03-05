@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\CompetitionController;
 use App\Http\Controllers\GameController;
@@ -54,3 +55,8 @@ Route::get('/performances/create', function () {
 
 Route::get('/performances/{id}/edit', [PerformanceController::class, 'edit'])->name('performances.edit');
 Route::put('/performances/{id}', [PerformanceController::class, 'update'])->name('performances.update');
+
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');

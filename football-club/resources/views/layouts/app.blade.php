@@ -56,11 +56,13 @@
     <aside id="sidebar">
         <h2>Menu</h2>
         <nav>
+            <a href="{{ route('dashboard') }}">Dashboard</a>
             <a href="{{ route('clubs.index') }}">Handle clubs</a>
             <a href="{{ route('places.index') }}">Handle places</a>
             <a href="{{ route('competitions.index') }}">Handle competition</a>
             <a href="{{ route('games.index') }}">Handle games</a>
         </nav>
+
     </aside>
 
     <!-- Main Content -->
