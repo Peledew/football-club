@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\PlayerDTO;
 use App\Models\Player;
 use App\Services\Contracts\IPlayerService;
 use Exception;
@@ -61,7 +62,7 @@ class PlayerController extends Controller
         }
 
         try {
-            $deserializedData = $this->serializer->deserialize($jsonData, Player::class, 'json');
+            $deserializedData = $this->serializer->deserialize($jsonData, PlayerDTO::class, 'json');
 
             $player = $this->_playerService->create($deserializedData);
 

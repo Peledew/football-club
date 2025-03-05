@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\DTOs\PlayerDTO;
 use App\Models\Player;
+use App\Models\User;
 use App\Repositories\Contracts\IPlayerRepository;
 use App\Services\Contracts\IPlayerService;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,9 +18,26 @@ class PlayerService implements IPlayerService
         $this->_playerRepository = $playerRepository;
     }
 
-    public function create(Player $newPlayer): Player
+    public function create(PlayerDTO $dto): Player
     {
-        return $this->_playerRepository->create($newPlayer);
+        $user = new User([
+            'username' => $dto->username,
+            'email' => $dto->email,
+            'name' => $dto->name,
+            'password' => $dto->password,
+        ]);
+
+        $newPlayer = new Player([
+            'last_name' => $dto->last_name,
+            'ssn' => $dto->ssn,
+            'date_of_birth' => $dto->date_of_birth,
+            'position' => $dto->position,
+            'place_id' => $dto->place_id,
+            'club_id' => $dto->club_id,
+            'picture' => $dto->picture,
+        ]);
+
+        return $this->_playerRepository->create($user, $newPlayer);
     }
 
     public function getAll(): Collection

@@ -26,6 +26,11 @@ class User extends Authenticatable
         'role',
     ];
 
+    public function player()
+    {
+        return $this->hasOne(Player::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

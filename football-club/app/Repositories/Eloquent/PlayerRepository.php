@@ -3,17 +3,25 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Player;
+use App\Models\User;
 use App\Repositories\Contracts\IPlayerRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class PlayerRepository implements IPlayerRepository
 {
 
-    public function create(Player $newPlayer): Player
+    public function create(User $user, Player $newPlayer): Player
     {
-        $newPlayer->save();
+        // Save Player through the User relationship
+        $user->save();
+        $user->player()->save($newPlayer);
+
+
         return $newPlayer;
     }
+
+
+
 
     public function getAll(): Collection
     {
