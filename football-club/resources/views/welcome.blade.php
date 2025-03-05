@@ -18,20 +18,26 @@
                 </div>
             </div>
             <div class="form-group mt-3">
-                <button type="submit" class="btn btn-success" id="login_button">
+                <button type="button" class="btn btn-success" id="login_button">
                     Login
                 </button>
             </div>
         </form>
     </div>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginButton = document.getElementById('login_button');
 
-        document.getElementById('login_button').addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent form submission to allow custom logic
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            loginButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
 
-            if (email && password) {
+                const requestData = {
+                    email: email,
+                    password: password
+                };
+
                 fetch('/api/login', {
                     method: 'POST',
                     headers: {
@@ -39,30 +45,21 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     },
-                    body: JSON.stringify({email, password})
+                    body: JSON.stringify(requestData),
                 })
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Login failed');
+                        if (response.ok) {
+                            console.log(response);
+                            // window.location.href = '/dashboard';
+                        } else {
+                            console.error('Error login in: ', response);
                         }
-                        return response.json();
-                    })
-                    .then(data => {
-                        localStorage.setItem('auth_token', data.token);
-                        localStorage.setItem('role', data.user.role);
-                        // console.log('Login successful:', data);
-                        // console.log("ROLA:" ,data.user.role);
-                         window.location.href = '/dashboard';
-
-
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Invalid login credentials or an error occurred.');
+                        alert('An error occurred while login in.');
                     });
-            } else {
-                alert('Please fill in both email and password fields.');
-            }
+            });
         });
 
     </script>

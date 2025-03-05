@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Js;
 
 class AuthController extends Controller
 {
@@ -24,7 +26,8 @@ class AuthController extends Controller
             'token' => $token->plainTextToken,
         ];
     }
-    public function login(Request $request){
+    public function login(Request $request): JsonResponse
+    {
         $request->validate([
             'email' => 'required|email|exists:users',
             'password' => 'required',
@@ -32,23 +35,23 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if(!$user || !Hash::check($request->password, $user->password)){
-            return response([
-                'message' => 'Bad credentials'
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                "message" => "Bad credentials"
             ], 401);
         }
 
         $token = $user->createToken($user->email);
 
-        return [
-            'user' => $user,
-            'token' => $token->plainTextToken,
-        ];
+        return response()->json([
+            "user" => $user,
+            "token" => $token->plainTextToken,
+        ]);
 
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request): JsonResponse{
         $request -> user() -> tokens() -> delete();
-        return ['message' => 'You are logged out'];
+        return response()->json(['message' => 'You are logged out']);
     }
 }

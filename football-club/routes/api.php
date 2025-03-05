@@ -10,11 +10,11 @@ use App\Http\Controllers\PlayerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+//Route::get('/user', function (Request $request) {
+//    return $request->user();
+//})->middleware('auth:sanctum');
 
-Route::apiResource('places', PlaceController::class)->middleware('auth:sanctum');
+Route::apiResource('places', PlaceController::class);
 Route::apiResource('clubs', ClubController::class);
 Route::apiResource('players', PlayerController::class);
 Route::apiResource('games', GameController::class);
@@ -23,5 +23,5 @@ Route::apiResource('performances', PerformanceController::class);
 
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login'])->name('login');
-Route::post('/logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
+Route::post('/logout',[AuthController::class,'logout']);
 

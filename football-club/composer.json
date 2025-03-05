@@ -11,7 +11,8 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "symfony/property-access": "^7.2",
-        "symfony/serializer": "^7.2"
+        "symfony/serializer": "^7.2",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
